@@ -1,0 +1,38 @@
+name: Generate English voice auditions
+on:
+  workflow_dispatch:
+    inputs:
+      voices:
+        description: "Optional space-separated voice IDs (empty = all English voices)"
+        required: false
+        type: string
+jobs:
+  audition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install synthesis prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y espeak-ng ffmpeg
+          python -m pip install --upgrade pip
+          python -m pip install 'kokoro==0.9.4' 'soundfile>=0.12,<1' 'numpy>=1.26,<3'
+      - name: Generate samples
+        env:
+          VOICES: ${{ inputs.voices }}
+        run: |
+          if [ -n "$VOICES" ]; then
+            read -r -a SELECTED <<< "$VOICES"
+            python scripts/generate_english_samples.py --voices "${SELECTED[@]}"
+          else
+            python scripts/generate_english_samples.py
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: english-voice-auditions
+          path: dist/voice-samples/
+          retention-days: 30
