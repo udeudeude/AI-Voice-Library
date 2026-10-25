@@ -1,0 +1,12 @@
+models/
+checkpoints/
+weights/
+*.onnx
+*.safetensors
+*.pt
+*.pth
+*.wav
+*.mp3
+.env
+.venv/
+__pycache__/
