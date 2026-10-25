@@ -1,5 +1,10 @@
 name: Generate English voice auditions
 on:
+  push:
+    paths:
+      - 'scripts/generate_english_samples.py'
+      - 'voice-lab/voice-catalog.json'
+      - '.github/workflows/english-auditions.yml'
   workflow_dispatch:
     inputs:
       voices:
