@@ -32,6 +32,8 @@ const LAB_ROOT = new URL('./', document.querySelector('script[src*="app.js"]')?.
 const VOICE_CATALOG_URL = new URL('voice-catalog.json?rev=kokoro-54-v3', LAB_ROOT).href;
 const VOICE_SAMPLE_MANIFEST_URL = 'https://udeudeude.github.io/voice-lab/voice-samples/manifest.json';
 const VOICE_SAMPLE_ROOT = 'https://udeudeude.github.io/voice-lab/voice-samples/';
+const COMMUNITY_SAMPLE_ROOT = 'https://udeudeude.github.io/voice-lab/community-v1.1/';
+const COMMUNITY_MANIFEST_URL = COMMUNITY_SAMPLE_ROOT + 'manifest.json';
 let voiceCatalog = null;
 let availableVoiceIds = null;
 let filteredVoices = [];
@@ -128,6 +130,13 @@ async function initializeVoiceBrowser() {
       const data=await m.json();
       if(!data.completed||!Array.isArray(data.available))throw Error('Samples still rendering');
       availableVoiceIds=new Set(data.available);
+      try {
+        const community = await fetch(COMMUNITY_MANIFEST_URL, {cache:'no-store'});
+        if (community.ok) {
+          const extra = await community.json();
+          if (extra.completed && Array.isArray(extra.available)) extra.available.forEach(id=>availableVoiceIds.add(id));
+        }
+      } catch (_) { /* Community recordings may not have been published yet. */ }
       chooseAndRenderVoiceBrowser(true);
       const count=availableVoiceIds.size;
       $('voiceAvailability').textContent=count+' recordings available';
@@ -157,7 +166,7 @@ async function loadLibraryVoice(force=false){
   voiceLoading=true;busyLoading=true;updateVoiceBrowserState();
   setStatus('Loading '+info.voice.name+'…');
   try{
-    const response=await fetch(VOICE_SAMPLE_ROOT+encodeURIComponent(info.voice.id)+'.mp3');
+    const response=await fetch((info.voice.sampleRoot ? COMMUNITY_SAMPLE_ROOT : VOICE_SAMPLE_ROOT)+encodeURIComponent(info.voice.id)+'.mp3');
     if(!response.ok)throw Error('Audio not found (HTTP '+response.status+')');
     const bytes=await response.arrayBuffer();
     $('clipStart').value='0';
