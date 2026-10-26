@@ -18,3 +18,6 @@ This is a source copy of the existing browser-based Kokoro Voice Lab from `udeud
 
 ## Safety
 Do not change existing podcast voice assignments or presets without explicit review.
+
+## October 25 update
+The public site and this repository currently contain separate copies of the app. Automatic deployment from this repository has not been implemented. The original 54 voices are catalogued; the 26 non-English voices require new English-language recordings before they become playable in the accented-English selector. Three v1.1 community voices are also catalogued but require generated recordings. Generation workflows are committed in the public site repository; their success and audio quality remain unverified. The app processes recordings rather than synthesizing arbitrary text in-browser.
