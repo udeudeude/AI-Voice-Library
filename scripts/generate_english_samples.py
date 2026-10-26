@@ -18,7 +18,7 @@ def main():
     import soundfile as sf
 
     catalog = json.loads(Path(args.catalog).read_text())
-    voices = [(group, voice) for group in catalog["groups"] for voice in group["voices"]]
+    voices = [(group, voice) for group in catalog["groups"] for voice in group["voices"] if group["code"] in ("a", "b")]
     if args.voices:
         wanted = set(args.voices)
         missing = wanted - {v["id"] for _, v in voices}
